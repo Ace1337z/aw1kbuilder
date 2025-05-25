@@ -75,7 +75,7 @@ echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
 distro="immortalwrt"
 repo="https://github.com/immortalwrt/immortalwrt.git"
 preset_folder="aw1kbuilder"
-preset_repo="https://raw.githubusercontent.com/nialwrt/aw1kbuilder/refs/heads/main/preset"
+preset_repo="https://raw.githubusercontent.com/nialwrt/aw1kbuilder/main/preset"
 deps=(
     ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential
     bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext
