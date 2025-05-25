@@ -28,7 +28,8 @@ echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
     echo -e "${BOLD_BLUE}REBUILD MENU:${RESET}"
     echo -e "1) FIRMWARE & PACKAGE UPDATE (FULL REBUILD)"
     echo -e "2) FIRMWARE UPDATE (FAST REBUILD)"
-    echo -e "3) EXISTING UPDATE (NO CHANGES)"
+    echo -e "3) CONFIG UPDATE (FAST REBUILD)"
+    echo -e "4) EXISTING UPDATE (NO CHANGES)"
     while true; do
         echo -ne "${BOLD_BLUE}CHOOSE OPTION: ${RESET}"
         read -r opt
@@ -61,6 +62,16 @@ echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
                 break
                 ;;
             3)
+                echo -e "${BOLD_YELLOW}PERFORMING FAST REBUILD (REMOVE CONFIG)...${RESET}"
+                cd "$distro" || exit 1
+                rm -f .config
+                apply_preset
+                make defconfig
+                run_menuconfig
+                start_build
+                break
+                ;;
+            4)
                 echo -e "${BOLD_YELLOW}STARTING BUILD WITH EXISTING CONFIGURATION...${RESET}"
                 cd "$distro" || exit 1
                 start_build
