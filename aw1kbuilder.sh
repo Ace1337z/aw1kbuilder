@@ -25,7 +25,7 @@ main_menu() {
 
     distro="immortalwrt"
     repo="https://github.com/immortalwrt/immortalwrt.git"
-    preset_repo="https://raw.githubusercontent.com/nialwrt/aw1kbuilder/main/preset"
+    preset_repo="https://github.com/nialwrt/aw1kbuilder.git"
     preset_folder="aw1kbuilder"
 
     deps=(
