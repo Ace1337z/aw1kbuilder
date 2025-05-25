@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 script_path="$(realpath "$0")"
 RESET='\033[0m'
 BOLD='\033[1m'
@@ -10,106 +11,49 @@ BOLD_YELLOW="${BOLD}${YELLOW}"
 BOLD_BLUE="${BOLD}${BLUE}"
 BOLD_MAGENTA="${BOLD}${MAGENTA}"
 main_menu() {
-clear
-echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
-echo -e "${BOLD_MAGENTA}             AW1KBUILDER              ${RESET}"
-echo -e "${BOLD_MAGENTA}      https://github.com/nialwrt      ${RESET}"
-echo -e "${BOLD_MAGENTA}         TELEGRAM: @NIALVPN           ${RESET}"
-echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
+    clear
+    echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
+    echo -e "${BOLD_MAGENTA}              AW1KBUILDER             ${RESET}"
+    echo -e "${BOLD_MAGENTA}      https://github.com/nialwrt      ${RESET}"
+    echo -e "${BOLD_MAGENTA}         TELEGRAM: @NIALVPN           ${RESET}"
+    echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
+    echo -e "${BOLD_BLUE}DISTRO: IMMORTALWRT${RESET}"
     echo -e "${BOLD_BLUE}BUILD MENU:${RESET}"
-}
-rebuild_menu() {
-clear
-echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
-echo -e "${BOLD_MAGENTA}             AW1KBUILDER              ${RESET}"
-echo -e "${BOLD_MAGENTA}      https://github.com/nialwrt      ${RESET}"
-echo -e "${BOLD_MAGENTA}         TELEGRAM: @NIALVPN           ${RESET}"
-echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
-    echo -e "${BOLD_BLUE}REBUILD MENU:${RESET}"
-    echo -e "1) FIRMWARE & PACKAGE UPDATE (FULL REBUILD)"
-    echo -e "2) FIRMWARE UPDATE (FAST REBUILD)"
-    echo -e "3) CONFIG UPDATE (FAST REBUILD)"
-    echo -e "4) EXISTING UPDATE (NO CHANGES)"
-    while true; do
-        echo -ne "${BOLD_BLUE}CHOOSE OPTION: ${RESET}"
-        read -r opt
-        case "$opt" in
-            1)
-                echo -e "${BOLD_YELLOW}REMOVING EXISTING BUILD DIRECTORY: ${distro}${RESET}"
-                rm -rf "$distro"
-                echo -e "${BOLD_YELLOW}CLONING FRESH FROM REPOSITORY: $repo${RESET}"
-                git clone "$repo" "$distro" || {
-                echo -e "${BOLD_RED}ERROR: GIT CLONE FAILED.${RESET}"
-                exit 1
-                }
-                cd "$distro" || exit 1
-                update_feeds || exit 1
-                select_target
-                apply_preset
-                make defconfig
-                run_menuconfig
-                start_build
-                break
-                ;;
-            2)
-                echo -e "${BOLD_YELLOW}PERFORMING FAST REBUILD (MAKE CLEAN)...${RESET}"
-                cd "$distro" || exit 1
-                make clean
-                select_target
-                apply_preset
-                make defconfig
-                start_build
-                break
-                ;;
-            3)
-                echo -e "${BOLD_YELLOW}PERFORMING FAST REBUILD (REMOVE CONFIG)...${RESET}"
-                cd "$distro" || exit 1
-                rm -f .config
-                apply_preset
-                make defconfig
-                run_menuconfig
-                start_build
-                break
-                ;;
-            4)
-                echo -e "${BOLD_YELLOW}STARTING BUILD WITH EXISTING CONFIGURATION...${RESET}"
-                cd "$distro" || exit 1
-                start_build
-                break
-                ;;
-            *)
-                echo -e "${BOLD_RED}INVALID CHOICE.${RESET}"
-                ;;
-        esac
-    done
-}
-distro="immortalwrt"
-repo="https://github.com/immortalwrt/immortalwrt.git"
-preset_folder="aw1kbuilder"
-preset_repo="https://raw.githubusercontent.com/nialwrt/aw1kbuilder/main/preset"
-deps=(
-    ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential
-    bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext
-    gcc-multilib g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1
-    libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev
-    libncurses-dev libpython3-dev libreadline-dev libssl-dev libtool libyaml-dev libz-dev
-    lld llvm lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python3
-    python3-pip python3-ply python3-docutils python3-pyelftools qemu-utils re2c rsync scons
-    squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd
-)
-install_deps() {
-    echo -e "${BOLD_YELLOW}INSTALLING ALL REQUIRED DEPENDENCIES...${RESET}"
-    sudo apt update -qq && sudo apt install -y "${deps[@]}" || {
-        echo -e "${BOLD_RED}FAILED TO INSTALL DEPENDENCIES. EXITING.${RESET}"
+    distro="immortalwrt"
+    repo="https://github.com/immortalwrt/immortalwrt.git"
+    deps=(
+        ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential
+        bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext
+        gcc-multilib g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1
+        libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev
+        libncurses-dev libpython3-dev libreadline-dev libssl-dev libtool libyaml-dev libz-dev
+        lld llvm lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python3
+        python3-pip python3-ply python3-docutils python3-pyelftools qemu-utils re2c rsync scons
+        squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd
+    )
+    if ! command -v sudo &>/dev/null; then
+        SUDO=""
+    else
+        SUDO="sudo"
+    fi
+    echo -e "${BOLD_YELLOW}UPDATING SYSTEM PACKAGES...${RESET}"
+    $SUDO apt update -y && $SUDO apt full-upgrade -y || {
+        echo -e "${BOLD_RED}ERROR: SYSTEM UPDATE FAILED.${RESET}"
+        exit 1
     }
-}
-git_distro() {
+    echo -e "${BOLD_YELLOW}INSTALLING DEPENDENCIES FOR ${distro^^}...${RESET}"
+    $SUDO apt install -y "${deps[@]}" || {
+        echo -e "${BOLD_RED}ERROR: FAILED TO INSTALL DEPENDENCIES.${RESET}"
+        exit 1
+    }
+    echo -e "${BOLD_GREEN}DEPENDENCIES INSTALLED SUCCESSFULLY.${RESET}"
     if [ ! -d "$distro" ]; then
-        echo -e "${BOLD_YELLOW}CLONING REPOSITORY: $repo INTO $distro...${RESET}"
-        git clone "$repo" "$distro" || {
+        echo -e "${BOLD_YELLOW}CLONING REPO: $repo INTO $distro...${RESET}"
+        git clone --depth=1 "$repo" "$distro" || {
             echo -e "${BOLD_RED}GIT CLONE FAILED. EXITING.${RESET}"
             exit 1
         }
+        echo -e "${BOLD_GREEN}REPO CLONED SUCCESSFULLY.${RESET}"
     else
         echo -e "${BOLD_GREEN}DIRECTORY '$distro' ALREADY EXISTS. SKIPPING CLONE.${RESET}"
     fi
@@ -200,11 +144,9 @@ start_build() {
             apply_preset
             run_menuconfig
         fi
-    done || exit 1
+    done
 }
 build_menu() {
-    install_deps
-    git_distro
     cd "$distro" || exit 1
     update_feeds || exit 1
     select_target
@@ -212,6 +154,71 @@ build_menu() {
     make defconfig
     run_menuconfig
     start_build
+}
+rebuild_menu() {
+clear
+    echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
+    echo -e "${BOLD_MAGENTA}              AW1KBUILDER             ${RESET}"
+    echo -e "${BOLD_MAGENTA}      https://github.com/nialwrt      ${RESET}"
+    echo -e "${BOLD_MAGENTA}         TELEGRAM: @NIALVPN           ${RESET}"
+    echo -e "${BOLD_MAGENTA}--------------------------------------${RESET}"
+    echo -e "${BOLD_BLUE}REBUILD MENU:${RESET}"
+    echo -e "1) FIRMWARE & PACKAGE UPDATE (FULL REBUILD)"
+    echo -e "2) FIRMWARE UPDATE (FAST REBUILD)"
+    echo -e "3) CONFIG UPDATE (FAST REBUILD)"
+    echo -e "4) EXISTING UPDATE (NO CHANGES)"
+    while true; do
+        echo -ne "${BOLD_BLUE}CHOOSE OPTION: ${RESET}"
+        read -r opt
+        case "$opt" in
+            1)
+                echo -e "${BOLD_YELLOW}REMOVING EXISTING BUILD DIRECTORY: ${distro}${RESET}"
+                rm -rf "$distro"
+                echo -e "${BOLD_YELLOW}CLONING FRESH FROM REPOSITORY: $repo${RESET}"
+                git clone "$repo" "$distro" || {
+                echo -e "${BOLD_RED}ERROR: GIT CLONE FAILED.${RESET}"
+                exit 1
+                }
+                cd "$distro" || exit 1
+                update_feeds || exit 1
+                select_target
+                apply_preset
+                make defconfig
+                run_menuconfig
+                start_build
+                break
+                ;;
+            2)
+                echo -e "${BOLD_YELLOW}PERFORMING FAST REBUILD (MAKE CLEAN)...${RESET}"
+                cd "$distro" || exit 1
+                make clean
+                select_target
+                apply_preset
+                make defconfig
+                start_build
+                break
+                ;;
+            3)
+                echo -e "${BOLD_YELLOW}PERFORMING FAST REBUILD (REMOVE CONFIG)...${RESET}"
+                cd "$distro" || exit 1
+                rm -f .config
+                apply_preset
+                make defconfig
+                run_menuconfig
+                start_build
+                break
+                ;;
+            4)
+                echo -e "${BOLD_YELLOW}STARTING BUILD WITH EXISTING CONFIGURATION...${RESET}"
+                cd "$distro" || exit 1
+                start_build
+                break
+                ;;
+            *)
+                echo -e "${BOLD_RED}INVALID CHOICE.${RESET}"
+                ;;
+        esac
+    done
 }
 main_menu
 if [ -d "$distro" ]; then
