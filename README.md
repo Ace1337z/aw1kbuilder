@@ -35,4 +35,4 @@ AW1KBUILDER is a beginner-friendly OpenWrt build script designed for quick deplo
 
 ## Quick Installation
 ```bash
-wget https://raw.githubusercontent.com/nialwrt/aw1kbuilder/main/aw1kbuilder.sh && chmod +x aw1k-nialwrt.sh && ./aw1kbuilder.sh
+wget https://raw.githubusercontent.com/nialwrt/aw1kbuilder/main/aw1kbuilder.sh && chmod +x aw1kbuilder.sh && ./aw1kbuilder.sh
