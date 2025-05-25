@@ -2,9 +2,9 @@
 [![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://github.com/nialwrt/AW1K-NIALWRT)
 [![License](https://img.shields.io/badge/License-GPLv2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 [![Maintenance](https://img.shields.io/badge/Maintained-Yes-brightgreen.svg)](https://github.com/nialwrt/AW1K-NIALWRT)
-# AW1K-NIALWRT Firmware Builder
+# AW1KBUILDER
 ## Overview
-AW1K-NIALWRT is a beginner-friendly OpenWrt build script designed for quick deployment and daily use. It comes with a full set of pre-configured packages and system tweaks, making it ideal for users who want a plug-and-play solution without needing to configure everything from scratch.
+AW1KBUILDER is a beginner-friendly OpenWrt build script designed for quick deployment and daily use. It comes with a full set of pre-configured packages and system tweaks, making it ideal for users who want a plug-and-play solution without needing to configure everything from scratch.
 
 ## Features
 * **Beginner Friendly:** Automates the entire build process — from dependencies to final firmware output.
