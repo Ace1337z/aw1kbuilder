@@ -40,48 +40,48 @@ main_menu() {
 
     SUDO=$(command -v sudo &>/dev/null && echo "sudo" || echo "")
 
-    echo -e "${BOLD_YELLOW}UPDATING SYSTEM PACKAGES...${RESET}"
+    echo -e "${BOLD_YELLOW}UPDATING SYSTEM PACKAGES${RESET}"
     $SUDO apt update -y && $SUDO apt full-upgrade -y || {
-        echo -e "${BOLD_RED}ERROR: SYSTEM UPDATE FAILED.${RESET}"
+        echo -e "${BOLD_RED}ERROR: SYSTEM UPDATE FAILED${RESET}"
         exit 1
     }
 
-    echo -e "${BOLD_YELLOW}INSTALLING DEPENDENCIES FOR ${distro^^}...${RESET}"
+    echo -e "${BOLD_YELLOW}INSTALLING DEPENDENCIES FOR ${distro^^}${RESET}"
     $SUDO apt install -y "${deps[@]}" || {
-        echo -e "${BOLD_RED}ERROR: FAILED TO INSTALL DEPENDENCIES.${RESET}"
+        echo -e "${BOLD_RED}ERROR: FAILED TO INSTALL DEPENDENCIES${RESET}"
         exit 1
     }
 
-    echo -e "${BOLD_GREEN}DEPENDENCIES INSTALLED SUCCESSFULLY.${RESET}"
+    echo -e "${BOLD_GREEN}DEPENDENCIES INSTALLED SUCCESSFULLY${RESET}"
 
     if [ ! -d "$distro" ]; then
-        echo -e "${BOLD_YELLOW}CLONING REPO: $repo INTO $distro...${RESET}"
+        echo -e "${BOLD_YELLOW}CLONING REPO: $repo INTO $distro${RESET}"
         git clone "$repo" "$distro" || {
-            echo -e "${BOLD_RED}GIT CLONE FAILED. EXITING.${RESET}"
+            echo -e "${BOLD_RED}GIT CLONE FAILED. EXITING${RESET}"
             exit 1
         }
-        echo -e "${BOLD_GREEN}REPO CLONED SUCCESSFULLY.${RESET}"
+        echo -e "${BOLD_GREEN}REPO CLONED SUCCESSFULLY${RESET}"
         just_cloned=1
     else
-        echo -e "${BOLD_GREEN}DIRECTORY '$distro' ALREADY EXISTS. SKIPPING CLONE.${RESET}"
+        echo -e "${BOLD_GREEN}DIRECTORY '$distro' ALREADY EXISTS. SKIPPING CLONE${RESET}"
         just_cloned=0
     fi
 }
 
 update_feeds() {
-    echo -e "${BOLD_YELLOW}UPDATING FEEDS...${RESET}"
+    echo -e "${BOLD_YELLOW}UPDATING FEEDS${RESET}"
     ./scripts/feeds update -a && ./scripts/feeds install -a || {
-        echo -e "${BOLD_RED}ERROR: FEEDS UPDATE FAILED.${RESET}"
+        echo -e "${BOLD_RED}ERROR: FEEDS UPDATE FAILED${RESET}"
         return 1
     }
 
     read -rp "${BOLD_BLUE}EDIT FEEDS IF NEEDED, THEN PRESS ENTER TO CONTINUE: ${RESET}"
     ./scripts/feeds update -a && ./scripts/feeds install -a || {
-        echo -e "${BOLD_RED}ERROR: FEEDS INSTALL FAILED AFTER EDIT.${RESET}"
+        echo -e "${BOLD_RED}ERROR: FEEDS INSTALL FAILED AFTER EDIT${RESET}"
         return 1
     }
 
-    echo -e "${BOLD_GREEN}FEEDS UPDATED SUCCESSFULLY.${RESET}"
+    echo -e "${BOLD_GREEN}FEEDS UPDATED SUCCESSFULLY${RESET}"
 }
 
 select_target() {
@@ -102,28 +102,28 @@ select_target() {
 }
 
 apply_preset() {
-    echo -e "${BOLD_YELLOW}CLEANING OLD PRESET AND CONFIG...${RESET}"
+    echo -e "${BOLD_YELLOW}CLEANING OLD PRESET AND CONFIG${RESET}"
     rm -rf ./files .config "$preset_folder"
 
-    echo -e "${BOLD_YELLOW}CLONING PRESET FROM $preset_repo...${RESET}"
+    echo -e "${BOLD_YELLOW}CLONING PRESET FROM $preset_repo${RESET}"
     if git clone "$preset_repo" "$preset_folder"; then
-        echo -e "${BOLD_GREEN}PRESET CLONED.${RESET}"
+        echo -e "${BOLD_GREEN}PRESET CLONED${RESET}"
         cp -r "$preset_folder/files" ./ 2>/dev/null && \
-            echo -e "${BOLD_GREEN}FILES COPIED.${RESET}" || \
-            echo -e "${BOLD_RED}FILES NOT FOUND OR FAILED TO COPY.${RESET}"
+            echo -e "${BOLD_GREEN}FILES COPIED${RESET}" || \
+            echo -e "${BOLD_RED}FILES NOT FOUND OR FAILED TO COPY${RESET}"
         cp "$preset_folder/preset" .config 2>/dev/null && \
-            echo -e "${BOLD_GREEN}PRESET APPLIED.${RESET}" || \
-            echo -e "${BOLD_RED}WARNING: PRESET NOT FOUND.${RESET}"
+            echo -e "${BOLD_GREEN}PRESET APPLIED${RESET}" || \
+            echo -e "${BOLD_RED}WARNING: PRESET NOT FOUND${RESET}"
     else
-        echo -e "${BOLD_RED}FAILED TO CLONE PRESET.${RESET}"
+        echo -e "${BOLD_RED}FAILED TO CLONE PRESET${RESET}"
         exit 1
     fi
 }
 
 run_menuconfig() {
-    echo -e "${BOLD_YELLOW}RUNNING MENUCONFIG...${RESET}"
+    echo -e "${BOLD_YELLOW}RUNNING MENUCONFIG${RESET}"
     make menuconfig
-    echo -e "${BOLD_GREEN}CONFIGURATION SAVED.${RESET}"
+    echo -e "${BOLD_GREEN}CONFIGURATION SAVED${RESET}"
 }
 
 get_version() {
@@ -134,7 +134,7 @@ get_version() {
 start_build() {
     get_version
     while true; do
-        echo -e "${BOLD_YELLOW}STARTING BUILD WITH $(nproc) CORES...${RESET}"
+        echo -e "${BOLD_YELLOW}STARTING BUILD WITH $(nproc) CORES${RESET}"
         start=$(date +%s)
 
         if make -j"$(nproc)"; then
@@ -146,7 +146,7 @@ start_build() {
             rm -rf "$preset_folder"; rm -f -- "$script_path"
             exit 0
         else
-            echo -e "${BOLD_RED}BUILD FAILED. RETRYING WITH VERBOSE OUTPUT...${RESET}"
+            echo -e "${BOLD_RED}BUILD FAILED. RETRYING WITH VERBOSE OUTPUT${RESET}"
             make -j1 V=s
             read -rp "${BOLD_RED}PLEASE FIX ERRORS AND PRESS ENTER TO RETRY: ${RESET}"
             make distclean
@@ -187,7 +187,7 @@ rebuild_menu() {
                 echo -e "${BOLD_YELLOW}REMOVING EXISTING BUILD DIRECTORY: $distro${RESET}"
                 rm -rf "$distro"
                 git clone "$repo" "$distro" || {
-                    echo -e "${BOLD_RED}ERROR: GIT CLONE FAILED.${RESET}"
+                    echo -e "${BOLD_RED}ERROR: GIT CLONE FAILED${RESET}"
                     exit 1
                 }
                 cd "$distro" || exit 1
@@ -219,7 +219,7 @@ rebuild_menu() {
                 start_build
                 ;;
             *)
-                echo -e "${BOLD_RED}INVALID CHOICE.${RESET}"
+                echo -e "${BOLD_RED}INVALID CHOICE${RESET}"
                 ;;
         esac
     done
