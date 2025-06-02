@@ -171,7 +171,7 @@ build_menu() {
 rebuild_menu() {
     clear
     echo -e "${BOLD_MAGENTA}##############################################${RESET}"
-    echo -e "${BOLD_MAGENTA}             AW1K REBUILD MENU                  ${RESET}"
+    echo -e "${BOLD_MAGENTA}             AW1K REBUILD MENU                ${RESET}"
     echo -e "${BOLD_MAGENTA}            TELEGRAM: @NIALVPN                ${RESET}"
     echo -e "${BOLD_MAGENTA}##############################################${RESET}"
     echo -e "${BOLD_BLUE}REBUILD MENU:${RESET}"
