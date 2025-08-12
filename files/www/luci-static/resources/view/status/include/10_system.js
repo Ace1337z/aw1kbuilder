@@ -43,7 +43,7 @@ return baseclass.extend({
 		]);
 
 		const fields = [
-			[_('Firmware'), 'AW1K NIALWRT'],
+			[_('Firmware'), 'SPADES V1.0'],
 			[_('Version'), versionString],
 			[_('Time'), datestr],
 			[_('Uptime'), info.uptime ? '%t'.format(info.uptime) : '?'],
